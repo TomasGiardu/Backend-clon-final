@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+</head>
+<body>
+    <h1>Perfil de Usuario</h1>
+    <h2>Datos del Usuario</h2>
+    <p>Nombre: {{user.name}}</p>
+    <p>Rol: {{user.role}}</p>
+
+    <h2>Subir Archivos</h2>
+    <form action="/{{user.id}}/documentos" method="POST" enctype="multipart/form-data">
+        <label for="profileImage">Imagen de Perfil:</label>
+        <input type="file" id="profileImage" name="profileImage"><br><br>
+
+        <label for="productImage">Imagen de Producto:</label>
+        <input type="file" id="productImage" name="productImage"><br><br>
+
+        <label for="documentFile">Archivos de Documento:</label>
+        <input type="file" id="documentFile" name="documentFile" multiple><br><br>
+
+        <button type="submit">Subir Archivos</button>
+    </form>
+
+        <a href="/realTimeProducts">
+            <button>volver</button>
+        </a>
+</body>
+</html>
