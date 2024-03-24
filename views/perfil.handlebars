@@ -11,16 +11,16 @@
     <p>Nombre: {{user.name}}</p>
     <p>Rol: {{user.role}}</p>
 
-    <h2>Subir Archivos</h2>
+    <h2>Subir Producto</h2>
     <form action="/{{user.id}}/documentos" method="POST" enctype="multipart/form-data">
-        <label for="profileImage">Imagen de Perfil:</label>
-        <input type="file" id="profileImage" name="profileImage"><br><br>
 
         <label for="productImage">Imagen de Producto:</label>
         <input type="file" id="productImage" name="productImage"><br><br>
 
-        <label for="documentFile">Archivos de Documento:</label>
-        <input type="file" id="documentFile" name="documentFile" multiple><br><br>
+        <label for="documentText">Datos:</label>
+        <input type="text" id="documentText" name="documentText" placeholder="Ingrese los datos del producto" style="width: 300px;"><br><br>
+
+
 
         <button type="submit">Subir Archivos</button>
     </form>
