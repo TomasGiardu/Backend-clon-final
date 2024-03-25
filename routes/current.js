@@ -4,7 +4,7 @@ const router = express.Router();
 const passport = require('passport');
 
 // Importar el DTO
-const UserDTO = require('../services/UserDTO');
+const UserDTO = require('../services/userDTO');
 
 // Ruta protegida para obtener el usuario actual
 router.get('/current', (req, res) => {
