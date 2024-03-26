@@ -1,22 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Carrito de Compras</title>
-    <style>
-        /* Estilos para la ventana emergente */
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border: 2px solid black;
-            z-index: 1000;
-            width: 400px;
-            display: none; /* Inicialmente oculta */
-        }
-    </style>
+    <!--Conexion con stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <h1>Carrito de Compras</h1>
@@ -43,19 +29,83 @@
         <button>Ir a Perfil</button>
     </a>
     <button onclick="createCart()">Crear Carrito</button>
-    <button onclick="comprar()">Comprar</button>
-    
 
-    <!-- Ventana emergente -->
-    <div id="popup" class="popup">
-        <h2>Detalle del Carrito</h2>
-        <p>Comprador: <span id="comprador"></span></p>
-        <ul id="productos"></ul>
-        <p>Total: $<span id="total"></span></p>
-        <button onclick="comprar()">Comprar</button>
-    </div>
+    <h1>Proceder con la compra</h1>
 
-    <script>
+        <label for="card-element">
+            Introduce tu información de tarjeta de crédito
+        </label>
+        <div id="card-element">
+            <!-- Elemento de tarjeta de crédito de Stripe -->
+        </div>
+
+        <!-- Utilizado para mostrar errores -->
+        <div id="card-errors" role="alert"></div>
+
+        <button id="submit" onclick="handlePayment()">Pagar ahora</button>
+
+
+     <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Stripe se está inicializando...");
+    var stripe = Stripe("pk_test_51OxHuAP8j3fUQoA7UllwwUP3P5qLQFVj9NaNrcbWGjQcweqxE8A3XVXwg96MvHdvdHCQx4VnPOxCQAZACjd8MDfv0032TO7Q1s");
+    console.log("Stripe se ha inicializado correctamente:", stripe);
+
+    var elements = stripe.elements();
+
+    // Estilo personalizado para el elemento de tarjeta de crédito
+    var style = {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily:
+                '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+            '::placeholder': {
+                color: '#aab7c4',
+            },
+        },
+    };
+
+    // Crear un elemento de tarjeta de crédito
+    var card = elements.create('card', { style: style });
+    card.mount('#card-element');
+
+    // Manejar cambios en el elemento de tarjeta para mostrar errores
+    card.addEventListener('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Manejar la presentación del formulario de pago
+    function handlePayment() {
+        // Lógica para crear el token de pago y manejarlo
+        stripe.createToken(card).then(function (result) {
+            if (result.error) {
+                // Mostrar un error si ocurre algún problema
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+            } else {
+                // Enviar el token de pago al servidor
+                console.log('Token de pago creado:', result.token); 
+                stripeTokenHandler(result.token);
+            }
+        });
+    }
+
+    // Enviar el token de pago al servidor
+    function stripeTokenHandler(token) {
+        // Puedes enviar el token de pago al servidor mediante una solicitud fetch
+        // Aquí deberías implementar la lógica para enviar el token al servidor y procesar el pago
+        console.log(token);
+        alert('Pago exitoso');
+    }
+});
+
         document.addEventListener('DOMContentLoaded', () => {
             const cartId = '{{cartId}}';
             const ul = document.getElementById('productosCarrito');
@@ -152,105 +202,8 @@
             });
         }
 
-function comprar() {
-    // Obtener los datos del cliente, los productos y el precio total
-    const cliente = 'Nombre del cliente'; // Puedes obtener esto de algún formulario o de la sesión del usuario
-    const productos = obtenerProductosDelCarrito(); // Obtener los productos del carrito
-    const precioTotal = calcularPrecioTotal(productos); // Calcular el precio total de los productos
-
-    // Mostrar una ventana emergente con los datos del cliente y los productos
-    const mensaje = `Cliente: ${cliente}\n\nProductos:\n${productos}\n\nPrecio Total: ${precioTotal}`;
-    alert(mensaje);
-
-    // Confirmar la compra
-    const confirmacion = confirm('¿Confirmar compra?');
-    if (confirmacion) {
-        // Si se confirma la compra, borrar todos los productos del carrito
-        fetch(`/api/carts/${cartId}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al borrar el carrito');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Carrito borrado correctamente:', data);
-            alert('Compra realizada con éxito');
-        })
-        .catch(error => {
-            console.error('Error al borrar el carrito:', error);
-            alert('Error al realizar la compra');
-        });
-    }
-}
-
-// Función para obtener los productos del carrito
-function obtenerProductosDelCarrito() {
-    // Implementa la lógica para obtener los productos del carrito aquí
-}
-
-// Función para calcular el precio total de los productos
-function calcularPrecioTotal(productos) {
-    // Implementa la lógica para calcular el precio total aquí
-}
-
 
     </script>
 </body>
 </html>
 
-
-<!--
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const cartId = '{{cartId}}';
-    const ul = document.getElementById('productosCarrito');
-
-    if (!ul) {
-        console.error('Elemento HTML "productosCarrito" no encontrado.');
-        return;
-    }
-
-    fetch(`/api/carts/${cartId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error en la respuesta: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(cart => {
-            console.log('Respuesta del servidor:', cart);
-
-            ul.innerHTML = ''; 
-
-            if (cart && cart.length > 0) {
-                cart.forEach(producto => {
-                    const li = document.createElement('li');
-                    li.textContent = `${producto.product} - Cantidad: ${producto.quantity}`;
-
-                    const form = document.createElement('form');
-                    form.action = `/carts/${cartId}/products/${producto.product}`;
-                    form.method = 'DELETE';
-
-                    const button = document.createElement('button');
-                    button.type = 'submit';
-                    button.textContent = 'Eliminar';
-
-                    form.appendChild(button);
-                    li.appendChild(form);
-                    ul.appendChild(li);
-                });
-            } else {
-                const p = document.createElement('p');
-                p.textContent = 'El carrito está vacío';
-                ul.appendChild(p);
-            }
-        })
-        .catch(error => console.error('Error al obtener productos del carrito:', error));
-});
-
-
-</script>  
--->
