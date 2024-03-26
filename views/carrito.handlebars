@@ -42,14 +42,18 @@
         <!-- Utilizado para mostrar errores -->
         <div id="card-errors" role="alert"></div>
 
-        <button id="submit" onclick="handlePayment()">Pagar ahora</button>
+        <!-- Realizar el pago -->
+        <button id="submit">Pagar ahora</button>
+
 
 
      <script>
+var stripe; // Declara stripe en el ámbito global
+var handlePayment; // Declara handlePayment en el ámbito global
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Stripe se está inicializando...");
-    var stripe = Stripe("pk_test_51OxHuAP8j3fUQoA7UllwwUP3P5qLQFVj9NaNrcbWGjQcweqxE8A3XVXwg96MvHdvdHCQx4VnPOxCQAZACjd8MDfv0032TO7Q1s");
+    stripe = Stripe("pk_test_51OxHuAP8j3fUQoA7UllwwUP3P5qLQFVj9NaNrcbWGjQcweqxE8A3XVXwg96MvHdvdHCQx4VnPOxCQAZACjd8MDfv0032TO7Q1s");
     console.log("Stripe se ha inicializado correctamente:", stripe);
 
     var elements = stripe.elements();
@@ -81,9 +85,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Manejar la presentación del formulario de pago
-    function handlePayment() {
-        // Lógica para crear el token de pago y manejarlo
+    function handlePayment(e) {
+        // Evitar que el formulario se envíe y la página se recargue
+        e.preventDefault();
+
+        // Lógica para manejar el pago
         stripe.createToken(card).then(function (result) {
             if (result.error) {
                 // Mostrar un error si ocurre algún problema
@@ -91,90 +97,76 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorElement.textContent = result.error.message;
             } else {
                 // Enviar el token de pago al servidor
-                console.log('Token de pago creado:', result.token); 
+                console.log('Token de pago creado:', result.token);
                 stripeTokenHandler(result.token);
             }
         });
     }
 
-    // Enviar el token de pago al servidor
-    function stripeTokenHandler(token) {
-        // Puedes enviar el token de pago al servidor mediante una solicitud fetch
-        // Aquí deberías implementar la lógica para enviar el token al servidor y procesar el pago
-        console.log(token);
-        alert('Pago exitoso');
+    // Agregar evento click al botón después de definir handlePayment
+    var submitButton = document.getElementById('submit');
+    submitButton.addEventListener('click', handlePayment);
+
+    // Todo el código relacionado con el carrito de compras y fetch debe ir aquí
+const cartId = '{{cartId}}';
+    const ul = document.getElementById('productosCarrito');
+    const popup = document.getElementById('popup');
+
+    if (!ul) {
+        console.error('Elemento HTML "productosCarrito" no encontrado.');
+        return;
     }
+
+    fetch(`/api/carts/${cartId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error en la respuesta: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(cart => {
+            console.log('Respuesta del servidor:', cart);
+
+            ul.innerHTML = ''; 
+
+            if (cart && cart.length > 0) {
+                cart.forEach(producto => {
+                    const li = document.createElement('li');
+                    li.textContent = `${producto.product} - Cantidad: ${producto.quantity}`;
+
+                    const button = document.createElement('button');
+                    button.textContent = 'Eliminar';
+
+                    button.addEventListener('click', () => {
+                        fetch(`/api/carts/${cartId}/products/${producto.product}`, {
+                            method: 'DELETE',
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Error en la respuesta: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(() => {
+                            // Eliminar el elemento de la lista en el cliente
+                            ul.removeChild(li);
+                            console.log('Producto eliminado correctamente');
+                        })
+                        .catch(error => console.error('Error al eliminar el producto del carrito:', error));
+                    });
+
+                    li.appendChild(button);
+                    ul.appendChild(li);
+                });
+            } else {
+                const p = document.createElement('p');
+                p.textContent = 'El carrito está vacío';
+                ul.appendChild(p);
+            }
+        })
+        .catch(error => console.error('Error al obtener productos del carrito:', error));
 });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const cartId = '{{cartId}}';
-            const ul = document.getElementById('productosCarrito');
-            const popup = document.getElementById('popup');
-
-            if (!ul) {
-                console.error('Elemento HTML "productosCarrito" no encontrado.');
-                return;
-            }
-
-            fetch(`/api/carts/${cartId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error en la respuesta: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(cart => {
-                    console.log('Respuesta del servidor:', cart);
-
-                    ul.innerHTML = ''; 
-
-                    if (cart && cart.length > 0) {
-                        cart.forEach(producto => {
-                            const li = document.createElement('li');
-                            li.textContent = `${producto.product} - Cantidad: ${producto.quantity}`;
-
-                            const button = document.createElement('button');
-                            button.textContent = 'Eliminar';
-
-                            button.addEventListener('click', () => {
-                                fetch(`/api/carts/${cartId}/products/${producto.product}`, {
-                                    method: 'DELETE',
-                                })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(`Error en la respuesta: ${response.status}`);
-                                    }
-                                    return response.json();
-                                })
-                                .then(() => {
-                                    // Eliminar el elemento de la lista en el cliente
-                                    ul.removeChild(li);
-                                    console.log('Producto eliminado correctamente');
-                                })
-                                .catch(error => console.error('Error al eliminar el producto del carrito:', error));
-                            });
-
-                            li.appendChild(button);
-                            ul.appendChild(li);
-                        });
-                    } else {
-                        const p = document.createElement('p');
-                        p.textContent = 'El carrito está vacío';
-                        ul.appendChild(p);
-                    }
-                })
-                .catch(error => console.error('Error al obtener productos del carrito:', error));
-
-            // Función para mostrar la ventana emergente
-            window.showPopup = () => {
-                popup.style.display = 'block';
-            };
-
-            // Función para ocultar la ventana emergente
-            window.hidePopup = () => {
-                popup.style.display = 'none';
-            };
-        });
 
         function createCart() {
             const accessToken = "user";
