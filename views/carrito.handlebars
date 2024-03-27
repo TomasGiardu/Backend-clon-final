@@ -107,7 +107,39 @@ document.addEventListener("DOMContentLoaded", function () {
     var submitButton = document.getElementById('submit');
     submitButton.addEventListener('click', handlePayment);
 
-    // Todo el código relacionado con el carrito de compras y fetch debe ir aquí
+    // Enviar el token de pago al servidor
+function stripeTokenHandler(token) {
+    // Enviar el token al servidor utilizando Fetch API
+    fetch('/procesar-pago', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token.id }), // Envía solo el ID del token
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al procesar el pago en el servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Manejar la respuesta del servidor
+        if (data.success) {
+            // Pago exitoso
+            alert('Pago exitoso');
+        } else {
+            // Error en el pago
+            alert('Error al procesar el pago. Por favor, inténtalo de nuevo.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al procesar el pago:', error);
+        alert('Se produjo un error al procesar el pago. Por favor, inténtalo de nuevo más tarde.');
+    });
+}
+
+// Todo el código relacionado con el carrito de compras y fetch 
 const cartId = '{{cartId}}';
     const ul = document.getElementById('productosCarrito');
     const popup = document.getElementById('popup');

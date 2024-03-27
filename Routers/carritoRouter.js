@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { productManagerInstance } = require('../productManager');
+const productManagerInstance  = require('../productManager');
 const Carts = require('../models/carts');
 const Product = require('../models/product');
 const Carrito = require('../carrito');
@@ -210,25 +210,36 @@ router.post('/:cid/product/:pid'/*, authorizationMiddleware('user')*/, (req, res
   if (carritoEncontrado) {
     console.log("Carrito encontrado:", carritoEncontrado);
 
-    const product = {
-      product: productoID,
-      quantity: 1,
-    };
+    // Obtener el precio del producto
+    const price = productManagerInstance.obtenerPrecioProducto(productoID);
 
-    // Verifica si el producto ya existe en el carrito
-    const existingProductIndex = carritoEncontrado.Products.findIndex((p) => p.product === productoID);
+    if (price !== null) {
+      const product = {
+        product: productoID,
+        quantity: 1,
+        price: price // Agregar el precio al objeto product
+      };
 
-    if (existingProductIndex !== -1) {
-      // Si ya existe, aumenta la cantidad en 1
-      carritoEncontrado.Products[existingProductIndex].quantity += 1;
+      // Verifica si el producto ya existe en el carrito
+      const existingProductIndex = carritoEncontrado.Products.findIndex((p) => p.product === productoID);
+
+      if (existingProductIndex !== -1) {
+        // Si ya existe, aumenta la cantidad en 1
+        carritoEncontrado.Products[existingProductIndex].quantity += 1;
+      } else {
+        // Si no existe, agrega el producto al carrito
+        carritoEncontrado.Products.push(product);
+      }
+
+      console.log("Productos en el carrito después de agregar:", carrito.obtenerCarritoPorId(carritoID));
+
+      res.status(201).json(carritoEncontrado);
     } else {
-      // Si no existe, agrega el producto al carrito
-      carritoEncontrado.Products.push(product);
+      // Manejo de error para "Producto no encontrado"
+      const errorMessage = "El producto no existe o no tiene precio.";
+      const errorStatusCode = 404;
+      next(new CustomError(errorMessage, errorStatusCode));
     }
-
-    console.log("Productos en el carrito después de agregar:", carrito.obtenerCarritoPorId(carritoID));
-
-    res.status(201).json(carritoEncontrado);
   } else {
     // Manejo de error para "Error al agregar al carrito"
     const errorMessage = errorInfo[Enums.ERROR_ADD_TO_CART].message;
@@ -239,6 +250,7 @@ router.post('/:cid/product/:pid'/*, authorizationMiddleware('user')*/, (req, res
   const io = req.app.get('io'); // Obtiene el objeto Socket.io
   io.emit('productoCambiado');
 });
+
 //End
 
 

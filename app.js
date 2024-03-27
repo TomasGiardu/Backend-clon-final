@@ -35,6 +35,8 @@ const logger = require('./utils/logger');
 //Swagger
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+//Stripe
+const stripe = require('stripe')("sk_test_51OxHuAP8j3fUQoA7VpyyPd7vdd9I0HhzHcrQWmiPkeUtJCnPdQPOOgEr8tAz1DOyLX8gKISFU3zcIIPosUjFjQgy00E9TnAZTN");
 
 const carrito = new Carrito();
 
@@ -176,6 +178,38 @@ app.get('/realtimeproducts', (req, res) => {
 
 //Modulo Mocking
 app.use('/', mockingModule);
+
+// Ruta para procesar el pago
+app.post('/procesar-pago', async (req, res) => {
+  try {
+      const { token, cartId } = req.body; // Token de pago y ID del carrito enviados desde el cliente
+
+      // Obtener productos del carrito usando la instancia de Carrito
+      const productos = carrito.obtenerCarritoPorId(cartId);
+
+      console.log("Productos en el carrito:", productos);
+      // Calcular el monto total del carrito
+      let total = 1;
+      productos.forEach(producto => {
+      total += producto.price.Precio * producto.quantity; // Acceder al precio dentro de un objeto 'price'
+});
+console.log("Monto total:", total * 100);
+      console.log("Monto total:", total * 100);
+
+      // Procesar el pago utilizando la biblioteca de Stripe
+      const charge = await stripe.charges.create({
+          amount: total * 100, // Convertir el monto a centavos
+          currency: 'usd',
+          source: token,
+          description: 'Pago de productos en mi tienda',
+      });
+      // Devolver una respuesta exitosa al cliente
+      res.status(200).json({ success: true, message: 'Pago procesado exitosamente' });
+  } catch (error) {
+      console.error('Error al procesar el pago:', error);
+      res.status(500).json({ success: false, error: 'Error al procesar el pago en el servidor' });
+  }
+});
 
 
 //Github
