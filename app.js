@@ -33,6 +33,7 @@ const { ObjectId } = require('mongoose').Types;
 const mockingModule = require('./mokingModule/mockingModule');
 const logger = require('./utils/logger');
 const userRoutes = require('./routes/userRoutes'); // Importa las rutas de usuario
+
 //Mongo
 const URL = process.env.MONGODB_URI;
 //Swagger
@@ -92,6 +93,7 @@ app.get('/login', (req, res) => {
   res.render('login'); // Renderiza la vista de inicio de sesión
 });
 
+app.use('/user', userRoutes);
 app.use('/api', userRoutes);
 app.use('/api/carrito', carritoRouters);
 app.use(express.json());
@@ -137,10 +139,38 @@ app.get('/carrito', async (req, res) => {
   }
 });
 
-// Define una ruta GET para '/perfil' que sirva el archivo handlebars correspondiente
-app.get('/perfil', (req, res) => {
-  res.render('perfil'); 
+// Define la ruta GET para '/perfil'
+app.get('/perfil', async (req, res) => {
+  try {
+    // Verificar si el usuario está autenticado y tiene una sesión válida
+    if (!req.session.user) {
+      return res.status(401).json({ message: 'Debes iniciar sesión para acceder a tu perfil' });
+    }
+
+    // Obtener el correo electrónico del usuario desde la sesión
+    const userEmail = req.session.user.email;
+
+    // Verificar si el correo electrónico está definido
+    if (!userEmail) {
+      return res.status(400).json({ message: 'Correo electrónico del usuario no encontrado en la sesión' });
+    }
+
+    // Obtener los datos del usuario desde la base de datos utilizando el correo electrónico
+    const userData = await User.findOne({ email: userEmail });
+
+    // Renderizar la vista 'perfil' y pasar los datos del usuario obtenidos de la base de datos
+    res.render('perfil', { user: { name: userData.name, email: userData.email, role: userData.role } });
+  } catch (error) {
+    console.error('Error al obtener los datos del usuario:', error);
+    res.status(500).json({ message: 'Se produjo un error al obtener los datos del usuario' });
+  }
 });
+
+
+
+
+
+
 
 //Swagger
 const swaggerOptions = {

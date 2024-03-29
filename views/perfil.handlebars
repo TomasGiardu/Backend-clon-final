@@ -6,25 +6,45 @@
     <title>Perfil de Usuario</title>
 </head>
 <body>
-    <h1>Perfil de Usuario</h1>
-    <h2>Datos del Usuario</h2>
-    <p>Nombre: {{ user.first_name }} {{ user.last_name }}</p> <!-- Concatenación de first_name y last_name -->
-    <p>Rol: {{ user.role }}</p>
+
+<h1>Perfil de Usuario</h1>
+<h2>Datos del Usuario</h2>
+<p>Correo electrónico: <span id="userEmail">{{ user.email }}</span></p>
+<p>Rol: <span id="userRole">{{ user.role }}</span></p>
+
+<form action="/users/premium" method="POST">
+    <button type="submit">Actualizar a Premium</button>
+</form>
 
     <h2>Subir Producto</h2>
-    <form action="/{{user.id}}/documentos" method="POST" enctype="multipart/form-data">
+<form action="/perfil/{{ user._id }}/documentos" method="POST" enctype="multipart/form-data">
+    <label for="productName">Nombre del Producto:</label>
+    <input type="text" id="productName" name="productName" placeholder="Ingrese el nombre del producto" required><br><br>
 
-        <label for="productImage">Imagen de Producto:</label>
-        <input type="file" id="productImage" name="productImage"><br><br>
+    <label for="productDescription">Descripción del Producto:</label>
+    <textarea id="productDescription" name="productDescription" placeholder="Ingrese la descripción del producto" rows="4" required></textarea><br><br>
 
-        <label for="documentText">Datos:</label>
-        <input type="text" id="documentText" name="documentText" placeholder="Ingrese los datos del producto" style="width: 300px;"><br><br>
+    <label for="productPrice">Precio del Producto:</label>
+    <input type="number" id="productPrice" name="productPrice" placeholder="Ingrese el precio del producto" step="0.01" required><br><br>
 
-        <button type="submit">Subir Archivos</button>
-    </form>
+    <label for="productQuantity">Cantidad del Producto:</label>
+    <input type="number" id="productQuantity" name="productQuantity" placeholder="Ingrese la cantidad del producto" required><br><br>
+
+    <button type="submit">Subir Archivos</button>
+</form>
 
     <a href="/realTimeProducts">
         <button>volver</button>
     </a>
+
+    <script>
+        // Obtener el objeto user del servidor
+        const userData = {{ user }};
+
+        // Mostrar los datos del usuario en la página
+        document.getElementById("userEmail").innerText = userData.email;
+        document.getElementById("userRole").innerText = userData.role;
+    </script>
 </body>
 </html>
+

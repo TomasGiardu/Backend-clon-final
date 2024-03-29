@@ -1,5 +1,6 @@
 const User = require('../models/User');
 
+
 const UserController = {
   // Método para cambiar el rol de un usuario
   async changeUserRole(req, res) {
@@ -28,24 +29,25 @@ const UserController = {
   },
 
   // Método para obtener el perfil de un usuario
-  async getUserProfile(req, res) {
-    const { userId } = req.params;
+  async getUserProfileByEmail(req, res) {
+    const { email } = req.params;
 
     try {
-      // Buscar al usuario por su ID
-      const user = await User.findById(userId);
+        // Buscar al usuario por su correo electrónico
+        const user = await User.findOne({ email });
 
-      console.log('Perfil de usuario:', user); // Agregado para depuración
+        console.log('Datos del usuario:', user);
+        console.log('Tipo de datos del usuario:', typeof user);
 
-      if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
-      }
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
 
-      // Devolver los datos del usuario
-      res.status(200).json(user);
+        // Devolver los datos del usuario
+        res.status(200).json(user);
     } catch (error) {
-      console.error('Error al obtener el perfil del usuario:', error);
-      res.status(500).json({ message: 'Se produjo un error al procesar la solicitud' });
+        console.error('Error al obtener el perfil del usuario:', error);
+        res.status(500).json({ message: 'Se produjo un error al procesar la solicitud' });
     }
   }
 };

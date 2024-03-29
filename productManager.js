@@ -110,16 +110,16 @@ class AgregarProductos {
 
 // Ejemplo de uso
 const productManagerInstance = new ProductManager();
-  productManagerInstance.agregarProducto("zapatilla", "Zapatilla Marca Nike", { Precio: 10000}, "Imagen.jpg", "1", 10);
-  productManagerInstance.agregarProducto("pantalon", "Pantalon Marca Levi`s", { Precio: 3000}, "Imagen.jpg", "2", 20);
-  productManagerInstance.agregarProducto("remera", "Remera Marca Vans", { Precio: 4000}, "Imagen.jpg", "3", 15);
-  productManagerInstance.agregarProducto("camisa", "Camisa Marca Lacoste", { Precio: 10000}, "Imagen.jpg", "4", 10);
-  productManagerInstance.agregarProducto("zapatillas", "Zapatillas Marca Fila", { Precio: 20000}, "Imagen.jpg", "5", 20);
-  productManagerInstance.agregarProducto("remera", "Remera Marca Cucci", { Precio: 15000 }, "Imagen.jpg", "6", 5);
-  productManagerInstance.agregarProducto("pantalon", "Pantalon Marca Furor", { Precio: 13000}, "Imagen.jpg", "7", 15);
-  productManagerInstance.agregarProducto("corbata", "Corbata Marca Hermès", { Precio: 10000}, "Imagen.jpg", "8", 8);
-  productManagerInstance.agregarProducto("vestido", "Vestido Marca Ted Baker", { Precio: 30000}, "Imagen.jpg", "9", 6);
-  productManagerInstance.agregarProducto("falda", "Falda Marca GANNI", { Precio: 9000}, "Imagen.jpg", "10", 7);
+  productManagerInstance.agregarProducto("zapatilla", "Zapatilla Marca Nike",  10000, "Imagen.jpg", "1", 10);
+  productManagerInstance.agregarProducto("pantalon", "Pantalon Marca Levi`s", 3000, "Imagen.jpg", "2", 20);
+  productManagerInstance.agregarProducto("remera", "Remera Marca Vans", 4000, "Imagen.jpg", "3", 15);
+  productManagerInstance.agregarProducto("camisa", "Camisa Marca Lacoste", 10000, "Imagen.jpg", "4", 10);
+  productManagerInstance.agregarProducto("zapatillas", "Zapatillas Marca Fila", 20000, "Imagen.jpg", "5", 20);
+  productManagerInstance.agregarProducto("remera", "Remera Marca Cucci", 15000, "Imagen.jpg", "6", 5);
+  productManagerInstance.agregarProducto("pantalon", "Pantalon Marca Furor", 13000, "Imagen.jpg", "7", 15);
+  productManagerInstance.agregarProducto("corbata", "Corbata Marca Hermès", 10000, "Imagen.jpg", "8", 8);
+  productManagerInstance.agregarProducto("vestido", "Vestido Marca Ted Baker", 30000, "Imagen.jpg", "9", 6);
+  productManagerInstance.agregarProducto("falda", "Falda Marca GANNI", 9000, "Imagen.jpg", "10", 7);
 
 module.exports = productManagerInstance;
 

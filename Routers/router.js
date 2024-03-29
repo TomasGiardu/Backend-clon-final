@@ -6,11 +6,10 @@ const Message = require('../models/message');
 const Carrito = require('../carrito');
 require('dotenv').config();
 const authorizationMiddleware = require('../middleware/authorization');
-const app = require('../app');
 const UserController = require('../controllers/UserController');
 
-// Define la ruta para obtener el perfil del usuario y llama al método getUserProfile del controlador
-router.get('/user/profile/:userId', UserController.getUserProfile);
+// Ruta para obtener el perfil del usuario por correo electrónico
+router.get('/profile/email/:email', UserController.getUserProfileByEmail);
 
 //Manejo de errores
 const { ERROR_PRODUCT_NOT_FOUND, ERROR_INVALID_PRODUCT } = require('../services/Errors/Enums');

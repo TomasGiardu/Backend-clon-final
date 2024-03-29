@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
         // Si las credenciales son correctas, establece la sesión del usuario
         req.session.user = {
             email: user.email,
-            role: user.role // Si tienes un campo de 'role' en tu modelo de usuario
+            role: user.role 
         };
 
         res.redirect('/home'); // Redirige a la página principal
@@ -99,6 +99,7 @@ router.post('/login', async (req, res) => {
         res.status(500).send('Error al iniciar sesión');
     }
 });
+
 
 
 // Ruta para el cierre de sesión
@@ -168,11 +169,6 @@ router.put('/users/premium', async (req, res) => {
 
         if (!user) {
             return res.status(404).send('Usuario no encontrado');
-        }
-
-        // Verificar si el usuario ha cargado los documentos requeridos
-        if (!user.documents || !user.documents.identification || !user.documents.proofOfAddress || !user.documents.bankStatement) {
-            return res.status(400).send('Debes cargar todos los documentos requeridos para actualizar tu rol a premium');
         }
 
         // Actualizar el rol del usuario a "premium"
