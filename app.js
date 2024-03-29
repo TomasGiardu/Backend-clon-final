@@ -32,6 +32,9 @@ const Carrito = require('./carrito')
 const { ObjectId } = require('mongoose').Types;
 const mockingModule = require('./mokingModule/mockingModule');
 const logger = require('./utils/logger');
+const userRoutes = require('./routes/userRoutes'); // Importa las rutas de usuario
+//Mongo
+const URL = process.env.MONGODB_URI;
 //Swagger
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -89,7 +92,7 @@ app.get('/login', (req, res) => {
   res.render('login'); // Renderiza la vista de inicio de sesión
 });
 
-
+app.use('/api', userRoutes);
 app.use('/api/carrito', carritoRouters);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));

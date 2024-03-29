@@ -8,8 +8,8 @@
 <body>
     <h1>Perfil de Usuario</h1>
     <h2>Datos del Usuario</h2>
-    <p>Nombre: {{user.name}}</p>
-    <p>Rol: {{user.role}}</p>
+    <p>Nombre: {{ user.first_name }} {{ user.last_name }}</p> <!-- Concatenación de first_name y last_name -->
+    <p>Rol: {{ user.role }}</p>
 
     <h2>Subir Producto</h2>
     <form action="/{{user.id}}/documentos" method="POST" enctype="multipart/form-data">
@@ -20,13 +20,11 @@
         <label for="documentText">Datos:</label>
         <input type="text" id="documentText" name="documentText" placeholder="Ingrese los datos del producto" style="width: 300px;"><br><br>
 
-
-
         <button type="submit">Subir Archivos</button>
     </form>
 
-        <a href="/realTimeProducts">
-            <button>volver</button>
-        </a>
+    <a href="/realTimeProducts">
+        <button>volver</button>
+    </a>
 </body>
 </html>
