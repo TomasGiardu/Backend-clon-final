@@ -32,8 +32,8 @@ const Carrito = require('./carrito')
 const { ObjectId } = require('mongoose').Types;
 const mockingModule = require('./mokingModule/mockingModule');
 const logger = require('./utils/logger');
-const userRoutes = require('./routes/userRoutes'); // Importa las rutas de usuario
-
+const userRoutes = require('./routes/userRoutes'); 
+const ProductManager = require('./productManager');
 //Mongo
 const URL = process.env.MONGODB_URI;
 //Swagger
@@ -93,6 +93,39 @@ app.get('/login', (req, res) => {
   res.render('login'); // Renderiza la vista de inicio de sesión
 });
 
+app.put('/users/premium', async (req, res) => {
+  console.log('Solicitud PUT recibida en /users/premium');
+  try {
+      // Verificar si el usuario está autenticado
+      if (!req.session.user) {
+          console.log('Usuario no autenticado');
+          return res.status(401).send('Debes iniciar sesión para realizar esta acción');
+      }
+
+      // Buscar al usuario actual en la base de datos
+      const user = await User.findById(req.session.user._id);
+
+      if (!user) {
+          console.log('Usuario no encontrado en la base de datos');
+          return res.status(404).send('Usuario no encontrado');
+      }
+
+      // Actualizar el rol del usuario a "premium"
+      user.role = 'premium';
+      await user.save();
+
+      // Actualizar la sesión del usuario con el nuevo rol
+      req.session.user.role = 'premium';
+
+      console.log('Rol del usuario actualizado a premium');
+      res.status(200).send('Tu rol ha sido actualizado a premium');
+  } catch (error) {
+      console.error('Error al actualizar el rol del usuario:', error);
+      res.status(500).send('Error al actualizar el rol del usuario');
+  }
+});
+
+app.use(express.urlencoded({ extended: true }));
 app.use('/user', userRoutes);
 app.use('/api', userRoutes);
 app.use('/api/carrito', carritoRouters);
@@ -125,6 +158,22 @@ wss.on('connection', (ws) => {
       console.log('Cliente WebSocket desconectado');
     }
   });
+});
+
+// Define la ruta POST para subir un nuevo producto
+app.post('/subir-producto', (req, res) => {
+  console.log('Ruta /subir-producto alcanzada'); // Verificar si la ruta es alcanzada correctamente
+
+  const { productName, productDescription, productPrice, productQuantity } = req.body;
+  console.log('Datos del producto recibidos:', req.body); // Verificar los datos del producto recibidos
+
+  // Agrega el producto al ProductManager
+  ProductManager.agregarProducto(productName, productDescription, productPrice, productQuantity);
+
+  console.log('Producto agregado al ProductManager'); // Confirmar que el producto se ha agregado correctamente
+
+  // Redirige a la página principal o muestra un mensaje de éxito
+  res.redirect('/');
 });
 
 // Define la ruta GET '/carrito' para renderizar vista 'carrito.handlebars'
@@ -165,12 +214,6 @@ app.get('/perfil', async (req, res) => {
     res.status(500).json({ message: 'Se produjo un error al obtener los datos del usuario' });
   }
 });
-
-
-
-
-
-
 
 //Swagger
 const swaggerOptions = {

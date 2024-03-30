@@ -7,6 +7,7 @@ const Carrito = require('../carrito');
 require('dotenv').config();
 const authorizationMiddleware = require('../middleware/authorization');
 const UserController = require('../controllers/UserController');
+const ProductManager = require('../productManager');
 
 // Ruta para obtener el perfil del usuario por correo electrónico
 router.get('/profile/email/:email', UserController.getUserProfileByEmail);
