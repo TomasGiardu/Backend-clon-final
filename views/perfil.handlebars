@@ -66,26 +66,28 @@
         console.log('Correo electrónico del usuario:', email);
 
         // Realizar una solicitud PUT utilizando AJAX
-        fetch('/user/change-role', {
+        fetch(`/user/change-role/${email}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, role: newRole }) // Enviar el nuevo rol en el cuerpo de la solicitud
+            body: JSON.stringify({ role: newRole }) // Enviar el nuevo rol en el cuerpo de la solicitud
         })
         .then(response => {
             console.log('Respuesta de la solicitud PUT:', response);
-            if (response.ok) {
-                // Si la solicitud se completa con éxito, mostrar un mensaje de éxito
-                console.log('Rol de usuario actualizado correctamente');
+                if (response.ok) {
+        // Si la solicitud se completa con éxito, mostrar un mensaje de éxito
+        console.log('Rol de usuario actualizado correctamente');
+        // Actualizar el rol del usuario en la página sin necesidad de recargar
+        document.getElementById("userRole").innerText = newRole;
             } else {
-                // Si la solicitud falla, mostrar un mensaje de error
-                console.error('Error al actualizar el rol del usuario');
-            }
-        })
-        .catch(error => {
-            console.error('Error al actualizar el rol del usuario:', error);
-        });
+        // Si la solicitud falla, mostrar un mensaje de error
+        console.error('Error al actualizar el rol del usuario');
+    }
+})
+.catch(error => {
+    console.error('Error al actualizar el rol del usuario:', error);
+});
     });
 
     // Event listener para el formulario de subida de producto

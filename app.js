@@ -11,9 +11,6 @@ const productManagerInstance = require('./productManager');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const connectToDatabase = require('./config/database');
-const carts = require('./models/carts');
-const message = require('./models/message');
-const product = require('./models/product');
 const router = express.Router();
 const productRouter = require('./Routers/router');
 const carritoRouter = require('./Routers/carritoRouter');
@@ -32,8 +29,10 @@ const Carrito = require('./carrito')
 const { ObjectId } = require('mongoose').Types;
 const mockingModule = require('./mokingModule/mockingModule');
 const logger = require('./utils/logger');
-const userRoutes = require('./routes/userRoutes'); 
 const ProductManager = require('./productManager');
+const userRoutes = require('./routes/userRoutes');
+const UserController = require('./controllers/UserController');
+
 //Mongo
 const URL = process.env.MONGODB_URI;
 //Swagger
@@ -286,7 +285,6 @@ console.log("Monto total:", total * 100);
       res.status(500).json({ success: false, error: 'Error al procesar el pago en el servidor' });
   }
 });
-
 
 //Github
 app.use(express.urlencoded({ extended: false }));
