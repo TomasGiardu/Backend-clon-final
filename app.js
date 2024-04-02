@@ -175,6 +175,11 @@ app.post('/subir-producto', (req, res) => {
   res.redirect('/');
 });
 
+//Define la ruta resetPassword para restablecer la contraseña
+app.get('/reset-password', (req, res) => {
+  res.render('reset-password'); // Renderizar la vista reset-password.hbs
+});
+
 // Define la ruta GET '/carrito' para renderizar vista 'carrito.handlebars'
 app.get('/carrito', async (req, res) => {
   const cartId = '1'; // Sustituye esto con el ID real de tu carrito

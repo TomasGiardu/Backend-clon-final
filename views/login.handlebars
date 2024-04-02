@@ -4,6 +4,7 @@
     <title>Iniciar sesión</title>
 </head>
 <body>
+
     <h1>Iniciar sesión</h1>
     {{#if errorMessage}}
         <p style="color: red;">{{errorMessage}}</p>
@@ -44,7 +45,7 @@ function forgotPassword(email) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: email }) // Pasamos solo el correo electrónico del destinatario
+        body: JSON.stringify({ email: email }) 
     })
     .then(response => {
         if (!response.ok) {

@@ -216,7 +216,7 @@ router.post('/:userId/documents', upload.array('documents'), async (req, res) =>
 
 // Configurar la estrategia de autenticación local
 passport.use(new LocalStrategy({
-    usernameField: 'email', // Suponiendo que estás utilizando el correo electrónico como nombre de usuario
+    usernameField: 'email',
     passwordField: 'password', // Campo de contraseña en el formulario de inicio de sesión
 }, async (email, password, done) => {
     try {
@@ -327,36 +327,3 @@ router.post('/forgot-password', async (req, res) => {
   });
 
 module.exports = router;
-
-/*
-// Ruta para solicitar un restablecimiento de contraseña
-router.post('/forgot-password', async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        // Buscar al usuario por su dirección de correo electrónico
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            console.log('El correo electrónico proporcionado no está registrado');
-            return res.status(404).json({ message: 'El correo electrónico proporcionado no está registrado' });
-        }
-
-        // Generar token de restablecimiento de contraseña
-        const token = crypto.randomBytes(20).toString('hex');
-        const expiresIn = Date.now() + 3600000; // Expira en 1 hora
-        user.resetPasswordToken = token;
-        user.resetPasswordExpires = expiresIn;
-        await user.save();
-
-        console.log('Correo electrónico encontrado en la base de datos:', user.email);
-
-        // Aquí puedes agregar el código para enviar el correo electrónico
-
-        res.status(200).json({ message: 'Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña' });
-    } catch (error) {
-        console.error('Error al solicitar el restablecimiento de contraseña:', error);
-        res.status(500).json({ message: 'Se produjo un error al procesar la solicitud' });
-    }
-});
-*/
